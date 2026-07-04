@@ -9,12 +9,15 @@ COPY backend/package.json backend/package.json
 COPY frontend/package.json frontend/package.json
 COPY shared/package.json shared/package.json
 
-RUN npm ci
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ \
+  && npm ci \
+  && apt-get purge -y --auto-remove python3 make g++ \
+  && rm -rf /var/lib/apt/lists/* /root/.npm
 
 COPY . .
 
 RUN npm run build
-RUN npm prune --omit=dev
 
 FROM node:22-bookworm-slim AS runtime
 
@@ -26,12 +29,19 @@ ENV PUBLIC_DIR=/app/frontend/dist
 
 WORKDIR /app
 
-COPY --from=build /app/package.json /app/package-lock.json ./
-COPY --from=build /app/node_modules ./node_modules
-COPY --from=build /app/backend/package.json ./backend/package.json
+COPY package.json package-lock.json ./
+COPY backend/package.json backend/package.json
+COPY frontend/package.json frontend/package.json
+COPY shared/package.json shared/package.json
+
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends python3 make g++ \
+  && npm ci --omit=dev \
+  && apt-get purge -y --auto-remove python3 make g++ \
+  && rm -rf /var/lib/apt/lists/* /root/.npm
+
 COPY --from=build /app/backend/dist ./backend/dist
 COPY --from=build /app/frontend/dist ./frontend/dist
-COPY --from=build /app/shared/package.json ./shared/package.json
 
 RUN mkdir -p /app/data
 
