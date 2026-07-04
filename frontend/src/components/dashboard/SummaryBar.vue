@@ -73,23 +73,23 @@ function moneyClasses(field: SummaryField) {
 </script>
 
 <template>
-  <div class="grid gap-3 sm:grid-cols-3">
+  <div class="grid min-w-0 gap-3 sm:grid-cols-3">
     <article
       v-for="card in cards"
       :key="card.field"
-      :class="['rounded-2xl border p-4 transition-colors', cardClasses(card.field)]"
+      :class="['min-w-0 rounded-2xl border p-4 transition-colors', cardClasses(card.field)]"
     >
-      <div class="flex items-center gap-2.5">
+      <div class="flex min-w-0 items-center gap-2.5">
         <span :class="['grid size-8 place-items-center rounded-lg', iconClasses(card.field)]">
           <component :is="card.icon" class="size-4" aria-hidden="true" />
         </span>
-        <div class="leading-tight">
+        <div class="min-w-0 leading-tight">
           <p class="text-xs font-black uppercase tracking-wider text-muted">{{ t(card.label) }}</p>
           <p class="text-[11px] font-semibold text-muted/80">{{ t(card.sub) }}</p>
         </div>
       </div>
       <p
-        :class="['mt-3 font-mono text-2xl font-black tracking-tight', moneyClasses(card.field)]"
+        :class="['mt-3 truncate font-mono text-2xl font-black tracking-tight', moneyClasses(card.field)]"
         style="font-variant-numeric: tabular-nums"
       >
         {{ value(card.field) }}

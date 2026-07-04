@@ -1,19 +1,27 @@
 <script setup lang="ts">
 import { computed, onMounted, shallowRef } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { Pencil, Trash2 } from 'lucide-vue-next'
 
 import DashboardHeader from '@/components/dashboard/DashboardHeader.vue'
+import Button from '@/components/ui/Button.vue'
 import LanguageSwitcher from '@/components/ui/LanguageSwitcher.vue'
 import PinGate from '@/features/auth/PinGate.vue'
 import EventCreateModal from '@/features/events/EventCreateModal.vue'
+import EventEditModal from '@/features/events/EventEditModal.vue'
+import { useToast } from '@/composables/useToast'
+import { useI18n } from '@/i18n'
 import { useSpendShareStore } from '@/stores/spendShare'
-import type { CreateEventPayload } from '@spend-share/types'
+import type { CreateEventPayload, UpdateEventPayload } from '@spend-share/types'
 
 const route = useRoute()
 const router = useRouter()
 const store = useSpendShareStore()
+const { showToast } = useToast()
+const { t } = useI18n()
 const isUnlocked = shallowRef(false)
 const isEventCreateOpen = shallowRef(false)
+const isEventEditOpen = shallowRef(false)
 
 const showBack = computed(() => route.name === 'event-detail')
 const activeEventName = computed(() => (route.name === 'event-detail' ? store.activeEvent?.name : null))
@@ -43,28 +51,89 @@ function handleCreateEvent(payload: CreateEventPayload) {
     }
   })
 }
+
+function handleEditEvent() {
+  if (!store.activeEvent) return
+  isEventEditOpen.value = true
+}
+
+function handleUpdateEvent(payload: UpdateEventPayload) {
+  if (!store.activeEvent) return
+  store.updateEvent(store.activeEvent.id, payload).then(() => {
+    isEventEditOpen.value = false
+    showToast({ title: t('toast.eventUpdated') })
+  })
+}
+
+function handleDeleteEvent() {
+  if (!store.activeEvent || !window.confirm(t('event.delete.confirm'))) return
+  store.deleteEvent(store.activeEvent.id).then(() => {
+    router.push({ name: 'events' })
+  })
+}
 </script>
 
 <template>
   <PinGate v-if="!isUnlocked" @unlock="handleUnlock" />
 
-  <main v-else class="min-h-screen w-full px-4 py-4 text-foreground sm:px-6 sm:py-6 lg:px-8 xl:px-10">
+  <main v-else class="min-h-screen w-full overflow-x-clip text-foreground">
     <DashboardHeader
       :show-back="showBack"
       :active-event-name="activeEventName"
       @back="handleBack"
     >
       <template #actions>
+        <template v-if="showBack && store.activeEvent">
+          <Button variant="ghost" size="icon" class="size-10" :aria-label="t('action.edit')" @click="handleEditEvent">
+            <Pencil class="size-4" aria-hidden="true" />
+          </Button>
+          <Button variant="ghost" size="icon" class="size-10 text-rose-300 hover:text-rose-200" :aria-label="t('action.delete')" @click="handleDeleteEvent">
+            <Trash2 class="size-4" aria-hidden="true" />
+          </Button>
+        </template>
         <LanguageSwitcher />
       </template>
     </DashboardHeader>
 
-    <RouterView v-slot="{ Component, route }">
-      <Transition name="surface" mode="out-in">
-        <component :is="Component" :key="route.fullPath" @new-event="handleNewEvent" />
-      </Transition>
-    </RouterView>
+    <div class="app-router-view">
+      <RouterView v-slot="{ Component, route }">
+        <Transition name="surface" mode="out-in">
+          <component :is="Component" :key="route.fullPath" @new-event="handleNewEvent" />
+        </Transition>
+      </RouterView>
+    </div>
 
     <EventCreateModal v-model:open="isEventCreateOpen" @create-event="handleCreateEvent" />
+    <EventEditModal v-model:open="isEventEditOpen" :event="store.activeEvent" @submit="handleUpdateEvent" />
   </main>
 </template>
+
+<style scoped>
+.app-router-view {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
+  padding-bottom: 1rem;
+}
+
+@media (min-width: 640px) {
+  .app-router-view {
+    padding-inline: max(1.5rem, env(safe-area-inset-left)) max(1.5rem, env(safe-area-inset-right));
+    padding-bottom: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .app-router-view {
+    padding-inline: max(2rem, env(safe-area-inset-left)) max(2rem, env(safe-area-inset-right));
+  }
+}
+
+@media (min-width: 1280px) {
+  .app-router-view {
+    padding-inline: max(2.5rem, env(safe-area-inset-left)) max(2.5rem, env(safe-area-inset-right));
+  }
+}
+</style>

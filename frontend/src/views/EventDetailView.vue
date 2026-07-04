@@ -15,6 +15,7 @@ import { useToast } from '@/composables/useToast'
 import { useI18n } from '@/i18n'
 import { useSpendShareStore } from '@/stores/spendShare'
 import type { CreateExpensePayload, CurrencyCode, OptimizedSettlement } from '@spend-share/types'
+import type { Expense } from '@spend-share/types'
 
 const route = useRoute()
 const router = useRouter()
@@ -25,6 +26,7 @@ const { t } = useI18n()
 const isExpenseDialogOpen = shallowRef(false)
 const isLoadingCurrent = shallowRef(true)
 const loadError = shallowRef(false)
+const editingExpense = shallowRef<Expense | null>(null)
 
 const eventId = computed(() => route.params.eventId as string | undefined)
 const currency = computed<CurrencyCode>(() => store.activeEvent?.defaultCurrency ?? 'USD')
@@ -52,9 +54,32 @@ watch(eventId, (next, prev) => {
 })
 
 function handleCreateExpense(payload: CreateExpensePayload) {
-  store.addExpense(payload).then(() => {
+  const wasEditing = Boolean(editingExpense.value)
+  const mutation = editingExpense.value
+    ? store.updateExpense(editingExpense.value.id, payload)
+    : store.addExpense(payload)
+
+  mutation?.then(() => {
     isExpenseDialogOpen.value = false
-    showToast({ title: t('toast.expenseAdded') })
+    editingExpense.value = null
+    showToast({ title: wasEditing ? t('toast.expenseUpdated') : t('toast.expenseAdded') })
+  })
+}
+
+function openAddExpense() {
+  editingExpense.value = null
+  isExpenseDialogOpen.value = true
+}
+
+function openEditExpense(expense: Expense) {
+  editingExpense.value = expense
+  isExpenseDialogOpen.value = true
+}
+
+function deleteExpense(expense: Expense) {
+  if (!window.confirm(t('expense.delete.confirm'))) return
+  store.deleteExpense(expense.id).then(() => {
+    showToast({ title: t('toast.expenseDeleted') })
   })
 }
 
@@ -78,7 +103,7 @@ function back() {
 </script>
 
 <template>
-  <div>
+  <div class="min-w-0">
     <Transition name="surface" mode="out-in">
       <div v-if="loadError" key="event-error" class="grid place-items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-16 text-center">
         <p class="text-base font-bold">{{ t('status.eventNotFound.title') }}</p>
@@ -88,8 +113,8 @@ function back() {
 
       <EventDetailSkeleton v-else-if="isLoadingCurrent" key="event-loading" />
 
-      <div v-else key="event-ready" class="grid gap-5 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_400px]">
-        <div class="grid content-start gap-5">
+      <div v-else key="event-ready" class="grid min-w-0 gap-5 xl:grid-cols-[minmax(0,1fr)_360px] 2xl:grid-cols-[minmax(0,1fr)_400px]">
+        <div class="grid min-w-0 content-start gap-5">
           <SummaryBar
             :balances="store.memberBalances"
             :currency="currency"
@@ -103,7 +128,7 @@ function back() {
             </span>
             <p class="text-base font-bold">{{ t('expense.empty.title') }}</p>
             <p class="max-w-xs text-sm text-muted">{{ t('expense.empty.description') }}</p>
-            <Button variant="primary" size="sm" class="mt-1" @click="isExpenseDialogOpen = true">
+            <Button variant="primary" size="sm" class="mt-1" @click="openAddExpense">
               <Plus class="size-4" aria-hidden="true" />
               {{ t('expense.add') }}
             </Button>
@@ -115,11 +140,13 @@ function back() {
             :expenses="store.expenses"
             :members="store.members"
             :you-id="youId"
-            @add-expense="isExpenseDialogOpen = true"
+            @add-expense="openAddExpense"
+            @delete-expense="deleteExpense"
+            @edit-expense="openEditExpense"
           />
         </div>
 
-        <aside class="grid content-start gap-4">
+        <aside class="grid min-w-0 content-start gap-4">
           <SettlementPanel
             :currency="currency"
             :members="store.members"
@@ -136,6 +163,7 @@ function back() {
       v-if="store.activeEvent && store.members.length > 0"
       v-model:open="isExpenseDialogOpen"
       :currency="currency"
+      :expense="editingExpense"
       :members="store.members"
       @submit="handleCreateExpense"
     />

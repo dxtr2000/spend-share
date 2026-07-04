@@ -14,6 +14,8 @@ import type {
   GroupMember,
   OptimizedSettlement,
   RecordedSettlement,
+  UpdateEventPayload,
+  UpdateExpensePayload,
   WorkspaceResponse
 } from '@spend-share/types'
 
@@ -92,9 +94,27 @@ export const useSpendShareStore = defineStore('spend-share', () => {
     return mutate('/api/events', payload)
   }
 
+  async function updateEvent(eventId: string, payload: UpdateEventPayload) {
+    return mutate(`/api/events/${eventId}`, payload, 'PATCH')
+  }
+
+  async function deleteEvent(eventId: string) {
+    return mutate(`/api/events/${eventId}`, undefined, 'DELETE')
+  }
+
   async function addExpense(payload: CreateExpensePayload) {
     if (!activeEvent.value) return
     return mutate(`/api/events/${activeEvent.value.id}/expenses`, payload)
+  }
+
+  async function updateExpense(expenseId: string, payload: UpdateExpensePayload) {
+    if (!activeEvent.value) return
+    return mutate(`/api/events/${activeEvent.value.id}/expenses/${expenseId}`, payload, 'PATCH')
+  }
+
+  async function deleteExpense(expenseId: string) {
+    if (!activeEvent.value) return
+    return mutate(`/api/events/${activeEvent.value.id}/expenses/${expenseId}`, undefined, 'DELETE')
   }
 
   async function recordSettlement(settlement: OptimizedSettlement) {
@@ -113,13 +133,13 @@ export const useSpendShareStore = defineStore('spend-share', () => {
     }
   }
 
-  async function mutate(url: string, body: unknown) {
+  async function mutate(url: string, body: unknown, method = 'POST') {
     isLoading.value = true
     try {
       applyWorkspace(
         await api<WorkspaceResponse>(url, {
-          method: 'POST',
-          body: JSON.stringify(body)
+          method,
+          body: body === undefined ? undefined : JSON.stringify(body)
         })
       )
     } catch (error) {
@@ -141,6 +161,8 @@ export const useSpendShareStore = defineStore('spend-share', () => {
     activeEvent,
     addExpense,
     createEvent,
+    deleteEvent,
+    deleteExpense,
     events,
     expenses,
     hasEvent,
@@ -152,6 +174,8 @@ export const useSpendShareStore = defineStore('spend-share', () => {
     optimizedSettlements,
     recordSettlement,
     resetWorkspace,
-    totalSpendMinor
+    totalSpendMinor,
+    updateEvent,
+    updateExpense
   }
 })

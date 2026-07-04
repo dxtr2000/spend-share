@@ -19,6 +19,8 @@ const props = defineProps<{
 
 defineEmits<{
   addExpense: []
+  deleteExpense: [expense: Expense]
+  editExpense: [expense: Expense]
 }>()
 
 const filter = shallowRef<Filter>('all')
@@ -57,7 +59,7 @@ function clearFilters() {
 </script>
 
 <template>
-  <section class="grid gap-3">
+  <section class="grid min-w-0 gap-3">
     <header class="flex items-center justify-between gap-3">
       <div>
         <h2 class="text-xl font-black tracking-tight">{{ t('expense.title') }}</h2>
@@ -69,7 +71,7 @@ function clearFilters() {
       </Button>
     </header>
 
-    <div class="grid gap-2 rounded-2xl border border-border bg-cardSoft p-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+    <div class="grid min-w-0 gap-2 rounded-2xl border border-border bg-cardSoft p-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
       <label class="relative block">
         <Search class="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted" aria-hidden="true" />
         <Input id="expense-search" v-model="query" class="border-transparent bg-card pl-10 pr-12" :placeholder="t('expense.search')" />
@@ -85,16 +87,16 @@ function clearFilters() {
         </Button>
       </label>
 
-      <div class="flex gap-1 rounded-xl bg-card p-1">
+      <div class="grid min-w-0 grid-cols-3 gap-1 rounded-xl bg-card p-1">
         <Button
           v-for="item in filters"
           :key="item.value"
           :variant="filter === item.value ? 'navActive' : 'ghost'"
           size="sm"
-          class="flex-1 whitespace-nowrap sm:flex-none"
+          class="min-w-0"
           @click="filter = item.value"
         >
-          {{ t(item.label) }}
+          <span class="truncate">{{ t(item.label) }}</span>
         </Button>
       </div>
     </div>
@@ -106,6 +108,8 @@ function clearFilters() {
         :currency="currency"
         :expense="expense"
         :members="members"
+        @delete-expense="$emit('deleteExpense', $event)"
+        @edit-expense="$emit('editExpense', $event)"
       />
     </TransitionGroup>
 

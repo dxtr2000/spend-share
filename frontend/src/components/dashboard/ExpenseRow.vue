@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import { Pencil, Trash2 } from 'lucide-vue-next'
 
 import { categoryOf } from '@/features/expenses/categories'
 import { useI18n } from '@/i18n'
@@ -10,6 +11,11 @@ const props = defineProps<{
   expense: Expense
   currency: CurrencyCode
   members: GroupMember[]
+}>()
+
+defineEmits<{
+  deleteExpense: [expense: Expense]
+  editExpense: [expense: Expense]
 }>()
 
 const { t } = useI18n()
@@ -33,9 +39,9 @@ function formatDate(date: string) {
 
 <template>
   <article
-    class="rounded-xl border border-border bg-card p-4 transition duration-200 focus-within:border-muted/70 focus-within:bg-cardSoft hover:-translate-y-0.5 hover:border-muted/70 hover:bg-cardSoft"
+    class="min-w-0 rounded-xl border border-border bg-card p-4 transition duration-200 focus-within:border-muted/70 focus-within:bg-cardSoft hover:-translate-y-0.5 hover:border-muted/70 hover:bg-cardSoft"
   >
-    <div class="grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3">
+    <div class="grid min-w-0 grid-cols-[auto_minmax(0,1fr)] items-center gap-3">
       <span :class="['grid size-9 shrink-0 place-items-center rounded-lg', category.tint]">
         <component :is="category.icon" class="size-4" aria-hidden="true" />
       </span>
@@ -50,7 +56,10 @@ function formatDate(date: string) {
           {{ t('expense.paidSplit', { payer, count: expense.participants.length }) }}
         </p>
       </div>
-      <div class="min-w-24 text-right">
+    </div>
+
+    <div class="mt-3 flex min-w-0 items-center justify-between gap-3 border-t border-border/70 pt-3">
+      <div class="min-w-0">
         <p class="font-mono text-lg font-black leading-tight text-foreground" style="font-variant-numeric: tabular-nums">
           {{ formatMoney(expense.amountMinor, expense.currency) }}
         </p>
@@ -58,6 +67,24 @@ function formatDate(date: string) {
           {{ t('expense.approx', { amount: formatMoney(convertedMinor, props.currency) }) }}
         </p>
         <p v-else class="mt-1 text-[11px] font-semibold text-muted/80">{{ t('expense.yourShare', { amount: formatMoney(youShare, expense.currency) }) }}</p>
+      </div>
+      <div class="flex shrink-0 items-center gap-1 rounded-lg border border-border bg-cardSoft p-0.5">
+        <button
+          type="button"
+          class="grid size-8 place-items-center rounded-md text-muted transition hover:bg-card hover:text-foreground"
+          :aria-label="t('action.edit')"
+          @click="$emit('editExpense', expense)"
+        >
+          <Pencil class="size-4" aria-hidden="true" />
+        </button>
+        <button
+          type="button"
+          class="grid size-8 place-items-center rounded-md text-muted transition hover:bg-rose-500/15 hover:text-rose-300"
+          :aria-label="t('action.delete')"
+          @click="$emit('deleteExpense', expense)"
+        >
+          <Trash2 class="size-4" aria-hidden="true" />
+        </button>
       </div>
     </div>
 

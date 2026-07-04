@@ -10,12 +10,13 @@ import FieldLabel from '@/components/ui/FieldLabel.vue'
 import Input from '@/components/ui/Input.vue'
 import Select from '@/components/ui/Select.vue'
 import { useI18n } from '@/i18n'
-import { formatMoney, parseMoneyToMinor, splitEvenly } from '@/lib/money'
+import { formatMoney, minorToMajor, parseMoneyToMinor, splitEvenly } from '@/lib/money'
 import { categoryList, currencyOptions } from '@/features/expenses/categories'
-import type { CreateExpensePayload, CurrencyCode, ExpenseParticipant, GroupMember } from '@spend-share/types'
+import type { CreateExpensePayload, CurrencyCode, Expense, ExpenseParticipant, GroupMember } from '@spend-share/types'
 
 const props = defineProps<{
   currency: CurrencyCode
+  expense?: Expense | null
   members: GroupMember[]
 }>()
 
@@ -37,6 +38,9 @@ const customShares = reactive<Record<string, string>>({})
 const submitAttempted = shallowRef(false)
 const { t } = useI18n()
 
+const isEditing = computed(() => Boolean(props.expense))
+const dialogTitle = computed(() => (isEditing.value ? t('expense.edit') : t('expense.add')))
+const submitLabel = computed(() => (isEditing.value ? t('action.save') : t('expense.add')))
 const memberOptions = computed(() => props.members.map((member) => ({ label: member.displayName, value: member.id })))
 const selectedMemberIds = computed(() => props.members.filter((member) => selectedMembers[member.id]).map((member) => member.id))
 const amountMinor = computed(() => parseMoneyToMinor(amount.value, expenseCurrency.value))
@@ -86,18 +90,28 @@ function ensureMemberDefaults() {
 }
 
 function resetForm() {
-  title.value = ''
-  amount.value = ''
-  expenseCurrency.value = props.currency
-  paidByMemberId.value = props.members[0]?.id ?? ''
-  date.value = new Date().toISOString().slice(0, 10)
-  notes.value = ''
-  category.value = 'Food & drink'
+  const expense = props.expense
+  title.value = expense?.title ?? ''
+  expenseCurrency.value = expense?.currency ?? props.currency
+  amount.value = expense ? String(minorToMajor(expense.amountMinor, expense.currency)) : ''
+  paidByMemberId.value = expense?.paidByMemberId ?? props.members[0]?.id ?? ''
+  date.value = expense?.date ?? new Date().toISOString().slice(0, 10)
+  notes.value = expense?.notes ?? ''
+  category.value = expense?.category ?? 'Food & drink'
   splitMode.value = 'equal'
   submitAttempted.value = false
+  const participantById = new Map(expense?.participants.map((participant) => [participant.memberId, participant]) ?? [])
+  const equal = expense ? splitEvenly(expense.amountMinor, expense.participants.map((participant) => participant.memberId)) : []
+  const isEqualSplit = expense
+    ? expense.participants.every((participant) =>
+      equal.some((share) => share.memberId === participant.memberId && share.shareMinor === participant.shareMinor)
+    )
+    : true
+  splitMode.value = isEqualSplit ? 'equal' : 'custom'
   for (const member of props.members) {
-    selectedMembers[member.id] = true
-    customShares[member.id] = ''
+    const participant = participantById.get(member.id)
+    selectedMembers[member.id] = expense ? Boolean(participant) : true
+    customShares[member.id] = participant ? String(minorToMajor(participant.shareMinor, expenseCurrency.value)) : ''
   }
 }
 
@@ -119,7 +133,7 @@ function submitForm() {
 </script>
 
 <template>
-  <Dialog v-model:open="open" :title="t('expense.add')" :description="t('expense.dialog.description')">
+  <Dialog v-model:open="open" :title="dialogTitle" :description="t('expense.dialog.description')">
     <form class="grid gap-4" @submit.prevent="submitForm" @keydown.meta.enter.prevent="submitForm" @keydown.ctrl.enter.prevent="submitForm">
       <div>
         <FieldLabel html-for="expense-title">{{ t('expense.titleField') }}</FieldLabel>
@@ -230,7 +244,7 @@ function submitForm() {
           {{ selectedTotalLabel }}
         </div>
         <Button variant="ghost" @click="open = false">{{ t('action.cancel') }}</Button>
-        <Button :disabled="submitAttempted && !canSubmit" type="submit">{{ t('expense.add') }}</Button>
+        <Button :disabled="submitAttempted && !canSubmit" type="submit">{{ submitLabel }}</Button>
       </footer>
     </form>
   </Dialog>

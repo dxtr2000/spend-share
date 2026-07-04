@@ -67,9 +67,16 @@ export interface CreateExpensePayload {
   participants: ExpenseParticipant[]
 }
 
+export type UpdateExpensePayload = CreateExpensePayload
+
 export interface CreateEventPayload {
   currency: CurrencyCode
   memberNames: string[]
+  name: string
+}
+
+export interface UpdateEventPayload {
+  currency: CurrencyCode
   name: string
 }
 

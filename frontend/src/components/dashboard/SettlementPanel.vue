@@ -2,7 +2,6 @@
 import { computed } from 'vue'
 import { ArrowRight, Check } from 'lucide-vue-next'
 
-import Button from '@/components/ui/Button.vue'
 import { useI18n } from '@/i18n'
 import { formatMoney } from '@/lib/money'
 import type { CurrencyCode, GroupMember, OptimizedSettlement } from '@spend-share/types'
@@ -24,7 +23,7 @@ const { t } = useI18n()
 </script>
 
 <template>
-  <section class="rounded-2xl border border-border/70 bg-card/60 p-5">
+  <section class="min-w-0 rounded-2xl border border-border/70 bg-card/60 p-5">
     <header class="mb-4 flex items-center justify-between gap-3">
       <div>
         <h2 class="text-sm font-black uppercase tracking-wider text-muted">{{ t('settlement.title') }}</h2>
@@ -44,7 +43,7 @@ const { t } = useI18n()
       <article
         v-for="settlement in settlements"
         :key="`${settlement.fromMemberId}-${settlement.toMemberId}-${settlement.amountMinor}`"
-        class="flex items-center gap-3 rounded-xl border border-border/80 bg-background/30 p-3"
+        class="grid min-w-0 gap-3 rounded-xl border border-border/80 bg-background/30 p-3"
       >
         <div class="flex min-w-0 flex-1 items-center gap-2">
           <span
@@ -59,10 +58,16 @@ const { t } = useI18n()
           >{{ name(settlement.toMemberId).slice(0, 1) }}</span>
           <span class="truncate text-sm font-bold">{{ name(settlement.toMemberId) }}</span>
         </div>
-        <strong class="font-mono text-sm font-black text-primary" style="font-variant-numeric: tabular-nums">
-          {{ formatMoney(settlement.amountMinor, currency) }}
-        </strong>
-        <Button size="sm" variant="secondary" @click="emit('settle', settlement)">{{ t('action.settle') }}</Button>
+        <button
+          type="button"
+          class="flex min-w-0 items-center justify-between gap-3 rounded-lg border border-border/70 bg-cardSoft px-3 py-2 text-left transition hover:border-primary/40 hover:bg-card active:scale-[0.99]"
+          @click="emit('settle', settlement)"
+        >
+          <strong class="min-w-0 truncate font-mono text-sm font-black text-primary" style="font-variant-numeric: tabular-nums">
+            {{ formatMoney(settlement.amountMinor, currency) }}
+          </strong>
+          <span class="shrink-0 text-xs font-extrabold text-muted">{{ t('action.settle') }}</span>
+        </button>
       </article>
     </div>
   </section>
