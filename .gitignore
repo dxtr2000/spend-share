@@ -1,0 +1,18 @@
+node_modules
+dist
+dev-dist
+coverage
+
+# local SQLite store (created at runtime)
+data
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+.DS_Store
+*.log
+.env
+.env.*
+
+# opencode / agent scratch
+.codex

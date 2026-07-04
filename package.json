@@ -1,0 +1,28 @@
+{
+  "name": "spend-share",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "workspaces": [
+    "frontend",
+    "backend",
+    "shared"
+  ],
+  "scripts": {
+    "dev": "concurrently --names api,web --prefix-colors cyan,magenta \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm --workspace @spend-share/backend run dev",
+    "dev:web": "npm --workspace @spend-share/frontend run dev",
+    "build": "npm --workspace @spend-share/backend run build && npm --workspace @spend-share/frontend run build",
+    "preview": "npm --workspace @spend-share/frontend run preview",
+    "typecheck": "npm --workspace @spend-share/backend run typecheck && npm --workspace @spend-share/frontend run typecheck",
+    "test": "npm --workspace @spend-share/frontend run test",
+    "lint": "eslint ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.39.1",
+    "concurrently": "^9.2.1",
+    "eslint": "^9.39.1",
+    "eslint-plugin-vue": "^10.6.2",
+    "@vue/eslint-config-typescript": "^14.6.0"
+  }
+}

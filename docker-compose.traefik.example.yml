@@ -1,0 +1,25 @@
+services:
+  spend-share:
+    build: /opt/docker/spend-share
+    container_name: spend-share
+    restart: unless-stopped
+    networks:
+      - proxy
+    environment:
+      - NODE_ENV=production
+      - HOST=0.0.0.0
+      - PORT=3001
+      - DATA_DIR=/app/data
+      - PUBLIC_DIR=/app/frontend/dist
+    volumes:
+      - /opt/docker/spend-share/data:/app/data
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.spend-share.rule=Host(`spend.hbworks.xyz`)"
+      - "traefik.http.routers.spend-share.entrypoints=websecure"
+      - "traefik.http.routers.spend-share.tls.certresolver=letsencrypt"
+      - "traefik.http.services.spend-share.loadbalancer.server.port=3001"
+
+networks:
+  proxy:
+    external: false

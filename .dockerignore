@@ -1,0 +1,15 @@
+node_modules
+**/node_modules
+dist
+**/dist
+dev-dist
+coverage
+data
+.git
+.codex
+.env
+.env.*
+*.log
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal

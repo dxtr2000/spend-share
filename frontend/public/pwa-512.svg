@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Spend Share icon">
+  <rect width="512" height="512" rx="128" fill="#0F172A"/>
+  <path d="M132 322c48 52 200 52 248 0" fill="none" stroke="#F59E0B" stroke-width="48" stroke-linecap="round"/>
+  <circle cx="198" cy="192" r="58" fill="#8B5CF6"/>
+  <circle cx="314" cy="192" r="58" fill="#F59E0B"/>
+</svg>
