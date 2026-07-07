@@ -7,23 +7,29 @@ const model = defineModel<string>({ default: '' })
 const props = withDefaults(
   defineProps<{
     ariaDescribedby?: string
+    ariaInvalid?: boolean
+    autocomplete?: string
     autofocus?: boolean
     class?: string
     inputmode?: 'text' | 'decimal' | 'numeric' | 'tel' | 'search' | 'email' | 'url'
     id: string
     max?: string
     min?: string
+    name?: string
     placeholder?: string
     step?: string
     type?: 'text' | 'number' | 'date' | 'email'
   }>(),
   {
     ariaDescribedby: undefined,
+    ariaInvalid: false,
+    autocomplete: 'off',
     autofocus: false,
     class: '',
     inputmode: 'text',
     max: undefined,
     min: undefined,
+    name: undefined,
     placeholder: '',
     step: undefined,
     type: 'text'
@@ -32,7 +38,7 @@ const props = withDefaults(
 
 const inputClass = computed(() =>
   cn(
-    'min-h-11 w-full rounded-xl border border-border bg-cardSoft px-4 text-base font-semibold text-foreground outline-none transition placeholder:text-muted/70 focus:border-primary focus:ring-4 focus:ring-primary/20',
+    'app-input',
     props.class
   )
 )
@@ -43,13 +49,22 @@ const inputClass = computed(() =>
     :id="id"
     v-model="model"
     :aria-describedby="ariaDescribedby"
+    :aria-invalid="ariaInvalid || undefined"
+    :autocomplete="autocomplete"
     :autofocus="autofocus"
     :class="inputClass"
     :inputmode="inputmode"
     :max="max"
     :min="min"
+    :name="name ?? id"
     :placeholder="placeholder"
     :step="step"
     :type="type"
   />
 </template>
+
+<style scoped>
+.app-input {
+  @apply min-h-11 w-full rounded-xl border border-border bg-cardSoft px-4 text-base font-semibold text-foreground outline-none transition placeholder:text-zinc-400 focus:border-primarySoft focus:ring-4 focus:ring-primary/25;
+}
+</style>

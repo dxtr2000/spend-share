@@ -142,10 +142,10 @@ function clearDate() {
 
 function dayClasses(day: CalendarDay) {
   return cn(
-    "grid size-8 place-items-center rounded-lg text-sm font-extrabold outline-none transition focus-visible:ring-4 focus-visible:ring-primary/30",
+    "date-picker__day",
     day.inMonth
       ? "text-foreground hover:bg-cardSoft"
-      : "text-muted/45 hover:bg-cardSoft/60",
+      : "text-zinc-500 hover:bg-cardSoft/60",
     day.iso === todayIso && "ring-1 ring-border",
     day.iso === model.value &&
       "bg-primary text-white shadow-glow hover:bg-primary",
@@ -168,7 +168,7 @@ function formatDayLabel(day: CalendarDay) {
         :aria-label="ariaLabel"
         :class="
           cn(
-            'flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-border bg-cardSoft px-4 text-left outline-none transition hover:border-muted/60 focus-visible:border-primary focus-visible:ring-4 focus-visible:ring-primary/20',
+            'date-picker__trigger',
             props.class,
           )
         "
@@ -179,7 +179,7 @@ function formatDayLabel(day: CalendarDay) {
             >{{ selectedIsoLabel }}</span
           >
         </span>
-        <CalendarDays class="size-5 shrink-0 text-muted" aria-hidden="true" />
+        <CalendarDays class="date-picker__trigger-icon" aria-hidden="true" />
       </button>
     </PopoverTrigger>
 
@@ -188,7 +188,7 @@ function formatDayLabel(day: CalendarDay) {
         align="start"
         position="popper"
         :side-offset="8"
-        class="z-[70] w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-2 shadow-2xl shadow-black/50 outline-none"
+        class="date-picker__content"
       >
         <header class="mb-2 flex items-center justify-between gap-2">
           <Button
@@ -218,7 +218,7 @@ function formatDayLabel(day: CalendarDay) {
           <span
             v-for="weekday in weekdayLabels"
             :key="weekday"
-            class="grid h-7 place-items-center text-[10px] font-black uppercase text-muted"
+            class="date-picker__weekday"
           >
             {{ weekday }}
           </span>
@@ -241,14 +241,14 @@ function formatDayLabel(day: CalendarDay) {
         >
           <button
             type="button"
-            class="px-2 text-xs font-black text-muted transition hover:text-foreground"
+            class="date-picker__footer-button"
             @click="clearDate"
           >
             Clear
           </button>
           <button
             type="button"
-            class="px-2 text-xs font-black text-primarySoft transition hover:text-foreground"
+            class="date-picker__footer-button date-picker__footer-button--primary"
             @click="selectToday"
           >
             Today
@@ -258,3 +258,33 @@ function formatDayLabel(day: CalendarDay) {
     </PopoverPortal>
   </PopoverRoot>
 </template>
+
+<style scoped>
+.date-picker__day {
+  @apply grid size-8 place-items-center rounded-lg text-sm font-extrabold outline-none transition focus-visible:ring-4 focus-visible:ring-primary/35;
+}
+
+.date-picker__trigger {
+  @apply flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-border bg-cardSoft px-4 text-left outline-none transition hover:border-muted/60 focus-visible:border-primarySoft focus-visible:ring-4 focus-visible:ring-primary/25;
+}
+
+.date-picker__trigger-icon {
+  @apply size-5 shrink-0 text-zinc-300;
+}
+
+.date-picker__content {
+  @apply z-[70] w-[min(19rem,calc(100vw-2rem))] rounded-2xl border border-border bg-card p-2 shadow-2xl shadow-black/50 outline-none;
+}
+
+.date-picker__weekday {
+  @apply grid h-7 place-items-center text-[10px] font-black uppercase text-zinc-300;
+}
+
+.date-picker__footer-button {
+  @apply rounded-md px-2 text-xs font-black text-zinc-300 transition hover:text-foreground focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/35;
+}
+
+.date-picker__footer-button--primary {
+  @apply text-primarySoft;
+}
+</style>

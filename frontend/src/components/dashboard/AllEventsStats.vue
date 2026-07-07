@@ -86,7 +86,7 @@ function formatSignedMoney(amountMinor: number, currency: AllEventsMemberRanking
       <article class="rounded-2xl border border-border/70 bg-card/70 p-4">
         <div class="flex items-center justify-between gap-3">
           <p class="text-xs font-black uppercase tracking-wider text-muted">{{ t('stats.events') }}</p>
-          <BarChart3 class="size-4 text-primary" aria-hidden="true" />
+          <BarChart3 class="size-4 text-primarySoft" aria-hidden="true" />
         </div>
         <p class="mt-3 text-3xl font-black tracking-tight">{{ props.stats.totals.eventCount }}</p>
         <p class="mt-1 text-xs font-semibold text-muted">{{ t('stats.eventsWithSpend', { count: props.stats.totals.eventsWithSpend }) }}</p>
@@ -129,7 +129,7 @@ function formatSignedMoney(amountMinor: number, currency: AllEventsMemberRanking
             <h2 class="text-base font-black tracking-tight">{{ t('stats.spendByEvent') }}</h2>
             <p class="mt-1 text-xs font-semibold text-muted">{{ t('stats.spendByEventSub') }}</p>
           </div>
-          <CircleDollarSign class="size-5 text-primary" aria-hidden="true" />
+          <CircleDollarSign class="size-5 text-primarySoft" aria-hidden="true" />
         </div>
 
         <div class="mt-5 grid gap-3">

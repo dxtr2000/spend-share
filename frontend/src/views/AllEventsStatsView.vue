@@ -1,16 +1,13 @@
 <script setup lang="ts">
 import { onMounted, shallowRef } from 'vue'
-import { ArrowLeft, CalendarDays } from 'lucide-vue-next'
-import { useRouter } from 'vue-router'
+import { CalendarDays } from 'lucide-vue-next'
 
 import AllEventsStats from '@/components/dashboard/AllEventsStats.vue'
-import Button from '@/components/ui/Button.vue'
 import SkeletonBlock from '@/components/ui/SkeletonBlock.vue'
 import { useToast } from '@/composables/useToast'
 import { useI18n } from '@/i18n'
 import type { AllEventsStatsResponse } from '@spend-share/types'
 
-const router = useRouter()
 const { showToast } = useToast()
 const { t } = useI18n()
 
@@ -31,24 +28,16 @@ async function loadStats() {
   }
 }
 
-function backToEvents() {
-  router.push({ name: 'events' })
-}
-
 onMounted(loadStats)
 </script>
 
 <template>
   <section class="grid gap-5">
-    <header class="flex items-center justify-between gap-3">
+    <header>
       <div>
         <h1 class="text-2xl font-black tracking-tight">{{ t('stats.title') }}</h1>
         <p class="text-sm font-semibold text-muted">{{ t('stats.subtitle') }}</p>
       </div>
-      <Button variant="secondary" size="sm" @click="backToEvents">
-        <ArrowLeft class="size-4" aria-hidden="true" />
-        {{ t('action.allEvents') }}
-      </Button>
     </header>
 
     <div v-if="isLoading" class="grid gap-4">
@@ -63,7 +52,7 @@ onMounted(loadStats)
       v-else-if="!stats || stats.totals.eventCount === 0"
       class="grid place-items-center gap-3 rounded-2xl border border-dashed border-border px-6 py-16 text-center"
     >
-      <span class="grid size-12 place-items-center rounded-full bg-primary/15 text-primary">
+      <span class="all-events-stats-view__empty-icon">
         <CalendarDays class="size-6" aria-hidden="true" />
       </span>
       <p class="text-base font-bold">{{ t('stats.empty.title') }}</p>
@@ -73,3 +62,9 @@ onMounted(loadStats)
     <AllEventsStats v-else :stats="stats" />
   </section>
 </template>
+
+<style scoped>
+.all-events-stats-view__empty-icon {
+  @apply grid size-12 place-items-center rounded-full bg-primary/15 text-primarySoft;
+}
+</style>

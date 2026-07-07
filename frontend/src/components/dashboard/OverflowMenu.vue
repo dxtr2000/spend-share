@@ -63,10 +63,10 @@ onScopeDispose(() => close())
 
     <template v-if="menuOpen">
       <div class="fixed inset-0 z-40" @click="onBackdrop" />
-      <div class="absolute right-0 top-full z-50 mt-1 min-w-44 overflow-hidden rounded-xl border border-border bg-card p-1 shadow-2xl shadow-black/40">
+      <div class="overflow-menu__content">
         <button
           type="button"
-          class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-foreground transition hover:bg-primary/15 hover:text-primary"
+          class="overflow-menu__item"
           @click="chooseNewEvent"
         >
           <Plus class="size-4" aria-hidden="true" />
@@ -74,7 +74,7 @@ onScopeDispose(() => close())
         </button>
         <button
           type="button"
-          class="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-rose-400 transition hover:bg-rose-500/15"
+          class="overflow-menu__item overflow-menu__item--danger"
           @click="chooseReset"
         >
           <Trash2 class="size-4" aria-hidden="true" />
@@ -86,9 +86,9 @@ onScopeDispose(() => close())
 
   <AlertDialogRoot v-model:open="confirmOpen">
     <AlertDialogPortal>
-      <AlertDialogOverlay class="fixed inset-0 z-[65] bg-black/70 backdrop-blur-sm" />
+      <AlertDialogOverlay class="overflow-menu__alert-overlay" />
       <AlertDialogContent
-        class="fixed left-1/2 top-1/2 z-[66] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-6 outline-none"
+        class="overflow-menu__alert-content"
       >
         <AlertDialogTitle class="text-lg font-black">{{ t('menu.confirm.title') }}</AlertDialogTitle>
         <AlertDialogDescription class="mt-2 text-sm leading-6 text-muted">
@@ -106,3 +106,25 @@ onScopeDispose(() => close())
     </AlertDialogPortal>
   </AlertDialogRoot>
 </template>
+
+<style scoped>
+.overflow-menu__content {
+  @apply absolute right-0 top-full z-50 mt-1 min-w-44 overflow-hidden rounded-xl border border-border bg-card p-1 shadow-2xl shadow-black/40;
+}
+
+.overflow-menu__item {
+  @apply flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-semibold text-foreground transition hover:bg-primary/15 hover:text-primarySoft focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/35;
+}
+
+.overflow-menu__item--danger {
+  @apply text-rose-400 hover:bg-rose-500/15 hover:text-rose-300;
+}
+
+.overflow-menu__alert-overlay {
+  @apply fixed inset-0 z-[65] bg-black/70 backdrop-blur-sm;
+}
+
+.overflow-menu__alert-content {
+  @apply fixed left-1/2 top-1/2 z-[66] w-[min(28rem,calc(100vw-2rem))] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-background p-6 outline-none focus-visible:ring-4 focus-visible:ring-primary/35;
+}
+</style>

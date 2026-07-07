@@ -23,8 +23,12 @@ const isUnlocked = shallowRef(false)
 const isEventCreateOpen = shallowRef(false)
 const isEventEditOpen = shallowRef(false)
 
-const showBack = computed(() => route.name === 'event-detail')
-const activeEventName = computed(() => (route.name === 'event-detail' ? store.activeEvent?.name : null))
+const showBack = computed(() => route.name === 'event-detail' || route.name === 'all-events-stats')
+const activeEventName = computed(() => {
+  if (route.name === 'event-detail') return store.activeEvent?.name
+  if (route.name === 'all-events-stats') return t('stats.title')
+  return null
+})
 
 onMounted(() => {
   isUnlocked.value = sessionStorage.getItem('spend-share-unlocked') === 'true'
@@ -112,8 +116,9 @@ function handleDeleteEvent() {
 .app-router-view {
   box-sizing: border-box;
   width: 100%;
-  max-width: 100%;
+  max-width: 78rem;
   min-width: 0;
+  margin-inline: auto;
   padding-inline: max(1rem, env(safe-area-inset-left)) max(1rem, env(safe-area-inset-right));
   padding-bottom: 1rem;
 }

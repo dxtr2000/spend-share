@@ -64,7 +64,7 @@ function iconClasses(field: SummaryField) {
     ? 'bg-rose-500/15 text-rose-500'
     : field === 'youAreOwed'
       ? 'bg-emerald-500/15 text-emerald-500'
-      : 'bg-primary/15 text-primary'
+      : 'bg-primary/15 text-primarySoft'
 }
 
 function moneyClasses(field: SummaryField) {
@@ -73,19 +73,19 @@ function moneyClasses(field: SummaryField) {
 </script>
 
 <template>
-  <div class="grid min-w-0 gap-3 sm:grid-cols-3">
+  <div class="summary-bar">
     <article
       v-for="card in cards"
       :key="card.field"
-      :class="['min-w-0 rounded-2xl border p-4 transition-colors', cardClasses(card.field)]"
+      :class="['summary-bar__card', cardClasses(card.field)]"
     >
-      <div class="flex min-w-0 items-center gap-2.5">
+      <div class="summary-bar__header">
         <span :class="['grid size-8 place-items-center rounded-lg', iconClasses(card.field)]">
           <component :is="card.icon" class="size-4" aria-hidden="true" />
         </span>
         <div class="min-w-0 leading-tight">
-          <p class="text-xs font-black uppercase tracking-wider text-muted">{{ t(card.label) }}</p>
-          <p class="text-[11px] font-semibold text-muted/80">{{ t(card.sub) }}</p>
+          <p class="summary-bar__label">{{ t(card.label) }}</p>
+          <p class="summary-bar__subtext">{{ t(card.sub) }}</p>
         </div>
       </div>
       <p
@@ -97,3 +97,25 @@ function moneyClasses(field: SummaryField) {
     </article>
   </div>
 </template>
+
+<style scoped>
+.summary-bar {
+  @apply grid min-w-0 gap-3 sm:grid-cols-3;
+}
+
+.summary-bar__card {
+  @apply min-w-0 rounded-2xl border p-4 transition-colors;
+}
+
+.summary-bar__header {
+  @apply flex min-w-0 items-center gap-2.5;
+}
+
+.summary-bar__label {
+  @apply text-xs font-black uppercase tracking-wider text-zinc-300;
+}
+
+.summary-bar__subtext {
+  @apply text-[11px] font-semibold text-zinc-300;
+}
+</style>

@@ -37,7 +37,7 @@ function submitPin() {
   <main class="mx-auto grid min-h-screen w-full max-w-md place-items-center px-4 py-8 text-foreground">
     <form class="w-full rounded-2xl border border-border bg-card p-6 shadow-panel" @submit.prevent="submitPin">
       <div class="mb-6 grid gap-3 text-center">
-        <span class="mx-auto grid size-12 place-items-center rounded-xl bg-primary/15 text-primary">
+        <span class="pin-gate__icon">
           <LockKeyhole class="size-6" aria-hidden="true" />
         </span>
         <div>
@@ -52,9 +52,10 @@ function submitPin() {
           :value="pin"
           autocomplete="one-time-code"
           autofocus
-          class="min-h-12 w-full rounded-xl border border-border bg-cardSoft px-4 text-center font-mono text-2xl font-black tracking-[0.45em] text-foreground outline-none transition placeholder:tracking-normal placeholder:text-muted/60 focus:border-primary focus:ring-4 focus:ring-primary/20"
+          class="pin-gate__input"
           inputmode="numeric"
           maxlength="4"
+          name="pin"
           placeholder="0000"
           type="password"
           @input="updatePin"
@@ -71,3 +72,13 @@ function submitPin() {
     </form>
   </main>
 </template>
+
+<style scoped>
+.pin-gate__icon {
+  @apply mx-auto grid size-12 place-items-center rounded-xl bg-primary/15 text-primarySoft;
+}
+
+.pin-gate__input {
+  @apply min-h-12 w-full rounded-xl border border-border bg-cardSoft px-4 text-center font-mono text-2xl font-black tracking-[0.45em] text-foreground outline-none transition placeholder:tracking-normal placeholder:text-zinc-400 focus:border-primarySoft focus:ring-4 focus:ring-primary/25;
+}
+</style>

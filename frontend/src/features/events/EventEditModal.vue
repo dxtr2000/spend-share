@@ -46,7 +46,7 @@ function submitForm() {
       <div class="grid gap-4 sm:grid-cols-[1fr_8rem]">
         <div>
           <FieldLabel html-for="edit-event-name">{{ t('event.name') }}</FieldLabel>
-          <Input id="edit-event-name" v-model="name" autofocus :placeholder="t('event.namePlaceholder')" />
+          <Input id="edit-event-name" v-model="name" autocomplete="off" autofocus name="edit-event-name" :placeholder="t('event.namePlaceholder')" />
         </div>
         <div>
           <FieldLabel html-for="edit-event-currency">{{ t('event.currency') }}</FieldLabel>

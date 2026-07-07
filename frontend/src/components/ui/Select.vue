@@ -33,11 +33,11 @@ defineProps<{
     <SelectTrigger
       :id="id"
       :aria-label="ariaLabel"
-      class="flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-border bg-cardSoft px-4 text-left text-base font-semibold text-foreground outline-none transition focus-visible:ring-4 focus-visible:ring-primary/30 data-[placeholder]:text-muted"
+      class="app-select-trigger"
     >
       <SelectValue :placeholder="placeholder ?? 'Select option'" />
       <SelectIcon>
-        <ChevronDown class="size-5 text-muted" aria-hidden="true" />
+        <ChevronDown class="app-select-trigger__icon" aria-hidden="true" />
       </SelectIcon>
     </SelectTrigger>
 
@@ -45,14 +45,14 @@ defineProps<{
       <SelectContent
         position="popper"
         :side-offset="8"
-        class="z-[60] max-h-72 min-w-[var(--reka-select-trigger-width)] overflow-hidden rounded-xl border border-border bg-card p-1 shadow-2xl shadow-black/40"
+        class="app-select-content"
       >
         <SelectViewport>
           <SelectItem
             v-for="option in options"
             :key="option.value"
             :value="option.value"
-            class="relative flex min-h-11 cursor-pointer select-none items-center rounded-xl py-2 pl-9 pr-3 text-sm font-semibold text-foreground outline-none data-[highlighted]:bg-primary/15 data-[highlighted]:text-primary"
+            class="app-select-item"
           >
             <SelectItemIndicator class="absolute left-3 inline-flex items-center">
               <Check class="size-4" aria-hidden="true" />
@@ -64,3 +64,21 @@ defineProps<{
     </SelectPortal>
   </SelectRoot>
 </template>
+
+<style scoped>
+.app-select-trigger {
+  @apply flex min-h-11 w-full items-center justify-between gap-3 rounded-xl border border-border bg-cardSoft px-4 text-left text-base font-semibold text-foreground outline-none transition focus-visible:border-primarySoft focus-visible:ring-4 focus-visible:ring-primary/30 data-[placeholder]:text-zinc-300;
+}
+
+.app-select-trigger__icon {
+  @apply size-5 text-zinc-300;
+}
+
+.app-select-content {
+  @apply z-[60] max-h-72 min-w-[var(--reka-select-trigger-width)] overflow-hidden rounded-xl border border-border bg-card p-1 shadow-2xl shadow-black/40;
+}
+
+.app-select-item {
+  @apply relative flex min-h-11 cursor-pointer select-none items-center rounded-xl py-2 pl-9 pr-3 text-sm font-semibold text-foreground outline-none data-[highlighted]:bg-primary/15 data-[highlighted]:text-primarySoft;
+}
+</style>
